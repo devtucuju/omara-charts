@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import ChartContainer from './components/charts/ChartContainer';
 import { Icon } from './components/ui';
+import { AppProvider, useAppContext } from './contexts';
 
-export default function App() {
+// Componente interno que usa o contexto
+const AppContent: React.FC = () => {
   const [count, setCount] = useState(0);
+  const { state } = useAppContext();
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -85,6 +88,49 @@ export default function App() {
                 />
                 <span className="text-sm">Lucide Icons</span>
               </div>
+              <div className="flex items-center">
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
+                <span className="text-sm">Context API</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <Icon name="info" size={20} className="text-primary-600 mr-2" />
+              Estado do Contexto
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium">Módulo:</span>{' '}
+                {state.selectedModule}
+              </div>
+              <div>
+                <span className="font-medium">Estações:</span>{' '}
+                {state.selectedStations.length} selecionadas
+              </div>
+              <div>
+                <span className="font-medium">Período:</span>{' '}
+                {state.timeRange.start.toLocaleDateString()} -{' '}
+                {state.timeRange.end.toLocaleDateString()}
+              </div>
+              <div>
+                <span className="font-medium">Dados:</span> {state.data.length}{' '}
+                registros
+              </div>
+              <div>
+                <span className="font-medium">Loading:</span>{' '}
+                {state.loading ? 'Sim' : 'Não'}
+              </div>
+              {state.error && (
+                <div className="text-red-600">
+                  <span className="font-medium">Erro:</span> {state.error}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -97,5 +143,14 @@ export default function App() {
         </div>
       </div>
     </div>
+  );
+};
+
+// Componente principal com Provider
+export default function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 }
