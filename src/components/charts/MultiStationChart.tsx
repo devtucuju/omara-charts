@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { Icon } from '../ui';
+import InteractiveLegend from './InteractiveLegend';
 import {
   useSelectedModule,
   useSelectedStations,
@@ -46,6 +47,18 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
   const [data, setData] = useAppData();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [legendVisibility, setLegendVisibility] = useState<boolean[]>([]);
+
+  // Funções para controlar visibilidade da legenda
+  const toggleLegendVisibility = (index: number) => {
+    const newVisibility = [...legendVisibility];
+    newVisibility[index] = !newVisibility[index];
+    setLegendVisibility(newVisibility);
+  };
+
+  const toggleAllLegend = (visible: boolean) => {
+    setLegendVisibility(legendVisibility.map(() => visible));
+  };
 
   // Cores para diferentes estações
   const stationColors = [
@@ -137,10 +150,16 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
       {} as Record<string, typeof data>
     );
 
+    // Inicializar visibilidade se necessário
+    if (legendVisibility.length !== Object.keys(stationGroups).length) {
+      setLegendVisibility(Object.keys(stationGroups).map(() => true));
+    }
+
     // Criar datasets para cada estação
     const datasets = Object.entries(stationGroups).map(
       ([stationId, stationData], index) => {
         const color = stationColors[index % stationColors.length];
+        const isVisible = legendVisibility[index] !== false;
 
         // Ordenar por data
         stationData.sort(
@@ -173,9 +192,10 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
           backgroundColor: `${color}20`,
           tension: 0.4,
           fill: false,
-          pointRadius: 3,
+          pointRadius: isVisible ? 3 : 0,
           pointHoverRadius: 6,
           stationId,
+          hidden: !isVisible,
         };
       }
     );
@@ -350,19 +370,19 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
         <Line data={chartData} options={chartOptions} />
       </div>
 
-      {/* Legenda das cores */}
+      {/* Legenda Interativa */}
       <div className="mt-4 pt-4 border-t border-gray-200">
-        <div className="flex flex-wrap gap-3">
-          {chartData.datasets.map((dataset, index) => (
-            <div key={index} className="flex items-center">
-              <div
-                className="w-3 h-3 rounded-full mr-2"
-                style={{ backgroundColor: dataset.borderColor }}
-              />
-              <span className="text-sm text-gray-600">{dataset.label}</span>
-            </div>
-          ))}
-        </div>
+        <InteractiveLegend
+          items={chartData.datasets.map(dataset => ({
+            label: dataset.label,
+            color: dataset.borderColor as string,
+            visible: !dataset.hidden,
+            stationId: dataset.stationId,
+          }))}
+          onToggleVisibility={toggleLegendVisibility}
+          onToggleAll={toggleAllLegend}
+          className="border-0 shadow-none p-0"
+        />
       </div>
     </div>
   );
