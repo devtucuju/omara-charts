@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ChartContainer from './components/charts/ChartContainer';
+import { Icon } from './components/ui';
 
 export default function App() {
   const [count, setCount] = useState(0);
@@ -8,9 +9,12 @@ export default function App() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            OMARA Charts Dashboard
-          </h1>
+          <div className="flex items-center justify-center mb-4">
+            <Icon name="activity" size={48} className="text-primary-600 mr-3" />
+            <h1 className="text-4xl font-bold text-gray-900">
+              OMARA Charts Dashboard
+            </h1>
+          </div>
           <p className="text-gray-600">
             Sistema de Visualização de Gráficos por Módulo e Estação
           </p>
@@ -28,25 +32,58 @@ export default function App() {
           </div>
 
           <div className="card">
-            <h3 className="text-lg font-semibold mb-4">
+            <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <Icon name="info" size={20} className="text-primary-600 mr-2" />
               Status da Configuração
             </h3>
             <div className="space-y-2">
               <div className="flex items-center">
-                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
                 <span className="text-sm">React + TypeScript</span>
               </div>
               <div className="flex items-center">
-                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
                 <span className="text-sm">TailwindCSS</span>
               </div>
               <div className="flex items-center">
-                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
                 <span className="text-sm">ESLint + Prettier</span>
               </div>
               <div className="flex items-center">
-                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
                 <span className="text-sm">Chart.js</span>
+              </div>
+              <div className="flex items-center">
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
+                <span className="text-sm">Axios</span>
+              </div>
+              <div className="flex items-center">
+                <Icon
+                  name="success"
+                  size={16}
+                  className="text-green-500 mr-2"
+                />
+                <span className="text-sm">Lucide Icons</span>
               </div>
             </div>
           </div>
