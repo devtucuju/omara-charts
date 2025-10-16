@@ -23,8 +23,8 @@ ChartJS.register(
 
 interface ChartContainerProps {
   title?: string;
-  data?: any;
-  options?: any;
+  data?: unknown;
+  options?: unknown;
   className?: string;
 }
 
