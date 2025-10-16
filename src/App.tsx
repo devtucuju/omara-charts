@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ChartContainer from './components/charts/ChartContainer';
+import { ChartContainer, MultiStationChart } from './components/charts';
 import { Icon } from './components/ui';
 import {
   ModuleSelector,
@@ -122,8 +122,9 @@ const AppContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Gráfico de Teste */}
-        <div className="mb-8">
+        {/* Gráficos */}
+        <div className="grid grid-cols-1 gap-6 mb-8">
+          <MultiStationChart className="w-full" />
           <ChartContainer
             title="Gráfico de Teste - Chart.js Configurado"
             className="w-full"
