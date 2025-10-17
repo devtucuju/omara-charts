@@ -1,6 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useReducer, ReactNode } from 'react';
-import { AppState, AppAction, AppContextType } from '../types';
+import {
+  AppState,
+  AppAction,
+  AppContextType,
+  ModuleType,
+  DateRange,
+  ModuleData,
+  Station,
+} from '../types';
 
 // Estado inicial da aplicação
 const initialState: AppState = {

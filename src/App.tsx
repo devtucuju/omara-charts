@@ -6,10 +6,9 @@ import {
   StationFilter,
   TimeRangeFilter,
 } from './components/filters';
-import { AppProvider, useAppContext } from './contexts';
+import { useAppContext } from './contexts';
 
-// Componente interno que usa o contexto
-const AppContent: React.FC = () => {
+const App: React.FC = () => {
   const [count, setCount] = useState(0);
   const { state } = useAppContext();
 
@@ -157,10 +156,4 @@ const AppContent: React.FC = () => {
 };
 
 // Componente principal com Provider
-export default function App() {
-  return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
-  );
-}
+export default App;
