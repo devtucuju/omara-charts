@@ -76,7 +76,7 @@ const StationFilter: React.FC = () => {
         {stations.map((station: Station) => (
           <label
             key={station.code}
-            className="flex items-center space-x-2 py-2 cursor-pointer hover:bg-gray-50 rounded-sm"
+            className="flex items-center space-x-3 py-2 cursor-pointer hover:bg-gray-50 rounded-sm px-2"
           >
             <input
               type="checkbox"
@@ -84,9 +84,14 @@ const StationFilter: React.FC = () => {
               checked={selectedStations.includes(station.code)}
               onChange={() => handleStationChange(station.code)}
             />
-            <span className="text-sm text-gray-700">
-              {station.location} ({station.code})
-            </span>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-900">
+                {station.location}
+              </div>
+              <div className="text-xs text-gray-500">
+                Código: {station.code} | Categoria: {station.category}
+              </div>
+            </div>
           </label>
         ))}
       </div>
