@@ -31,6 +31,15 @@ import {
   Play,
   Pause,
   Square,
+  Database,
+  Trash2,
+  MousePointer,
+  ZoomIn,
+  ZoomOut,
+  Maximize,
+  Box,
+  MapPin,
+  Success,
 } from 'lucide-react';
 
 // Mapeamento de ícones para facilitar uso
@@ -74,6 +83,17 @@ const iconMap = {
   play: Play,
   pause: Pause,
   stop: Square,
+
+  // Adicionais
+  database: Database,
+  'trash-2': Trash2,
+  'mouse-pointer': MousePointer,
+  'zoom-in': ZoomIn,
+  'zoom-out': ZoomOut,
+  maximize: Maximize,
+  box: Box,
+  'map-pin': MapPin,
+  success: Success,
 } as const;
 
 type IconName = keyof typeof iconMap;
@@ -100,5 +120,6 @@ const Icon: React.FC<IconProps> = ({
   return <IconComponent size={size} className={className} {...props} />;
 };
 
+export { Icon };
 export default Icon;
 export type { IconName };
