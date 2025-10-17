@@ -36,22 +36,39 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
   const moduleConfig =
     MODULES[state.selectedModule.toUpperCase() as keyof typeof MODULES];
 
-  // Dados de exemplo baseados no módulo selecionado
+  // Dados de exemplo baseados na estação selecionada
   const getSampleData = () => {
-    const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+    // Se não há estação selecionada, mostrar mensagem
+    if (state.selectedStations.length === 0) {
+      return { labels: [], data: [], color: 'rgb(156, 163, 175)' };
+    }
+
+    const stationId = state.selectedStations[0];
+    const labels = [
+      '2024-01-15 08:00',
+      '2024-01-15 12:00',
+      '2024-01-15 16:00',
+      '2024-01-15 20:00',
+      '2024-01-16 08:00',
+      '2024-01-16 12:00',
+    ];
+
     let data: number[];
     let color: string;
 
     switch (state.selectedModule) {
       case 'intrusion':
+        // Nível de Salinidade (0-40)
         data = [25, 30, 28, 35, 32, 29];
         color = 'rgb(59, 130, 246)'; // Azul
         break;
       case 'solid':
+        // Sólidos em Suspensão
         data = [45, 52, 48, 55, 50, 47];
         color = 'rgb(16, 185, 129)'; // Verde
         break;
       case 'inundation':
+        // Nível Medido
         data = [12, 15, 18, 14, 16, 13];
         color = 'rgb(245, 158, 11)'; // Amarelo
         break;
@@ -60,17 +77,19 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
         color = 'rgb(75, 192, 192)';
     }
 
-    return { labels, data, color };
+    return { labels, data, color, stationId };
   };
 
-  const { labels, data, color } = getSampleData();
+  const { labels, data, color, stationId } = getSampleData();
 
   const chartData = {
-    labels,
+    labels: labels as string[],
     datasets: [
       {
-        label: moduleConfig?.name || 'Dados',
-        data,
+        label: stationId
+          ? `${moduleConfig?.name} - ${stationId}`
+          : 'Selecione uma estação',
+        data: data as number[],
         borderColor: color,
         backgroundColor: `${color}20`,
         tension: 0.4,
@@ -88,7 +107,9 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
       },
       title: {
         display: true,
-        text: title || `${moduleConfig?.name || 'Gráfico'} - Dados de Exemplo`,
+        text: stationId
+          ? `${moduleConfig?.name} - Estação ${stationId}`
+          : 'Selecione uma estação para visualizar os dados',
       },
     },
     scales: {
@@ -103,7 +124,10 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
       x: {
         title: {
           display: true,
-          text: 'Período',
+          text: 'Data e Hora',
+        },
+        ticks: {
+          maxTicksLimit: 6,
         },
       },
     },
@@ -118,18 +142,56 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
           {title || `${moduleConfig?.name || 'Gráfico'}`}
         </h2>
         <div className="text-sm text-gray-500">
-          {state.selectedStations.length} estação(ões) selecionada(s)
+          {state.selectedStations.length > 0 ? (
+            <span className="text-green-600 font-medium">
+              Estação: {state.selectedStations[0]}
+            </span>
+          ) : (
+            <span className="text-gray-500">Nenhuma estação selecionada</span>
+          )}
         </div>
       </div>
-      <div className="h-80">
-        <Line data={chartData} options={chartOptions} />
-      </div>
-      <div className="mt-4 p-3 bg-gray-50 rounded-md">
-        <div className="text-sm text-gray-600">
-          <strong>Nota:</strong> Este é um gráfico de exemplo. Os dados reais
-          serão carregados quando a API estiver conectada.
+
+      {state.selectedStations.length === 0 ? (
+        <div className="h-80 flex items-center justify-center bg-gray-50 rounded-md">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">
+              <svg
+                className="w-16 h-16 mx-auto"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <p className="text-gray-600 font-medium">
+              Selecione uma estação para visualizar os dados
+            </p>
+            <p className="text-gray-500 text-sm mt-1">
+              Escolha uma estação no filtro acima para gerar o gráfico
+            </p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="h-80">
+            <Line data={chartData} options={chartOptions} />
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 rounded-md">
+            <div className="text-sm text-blue-800">
+              <strong>Dados de Exemplo:</strong> Este gráfico mostra dados
+              simulados para a estação {state.selectedStations[0]}. Os dados
+              reais serão carregados quando a API estiver conectada.
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

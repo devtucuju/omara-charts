@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSelectedStations, useStations } from '../../hooks/useAppContext';
+import {
+  useSelectedStations,
+  useStations,
+  useSelectedModule,
+} from '../../hooks/useAppContext';
 import { api } from '../../services/api';
 import { Icon } from '../ui/Icon';
 import type { Station } from '../../types';
@@ -7,6 +11,7 @@ import type { Station } from '../../types';
 const StationFilter: React.FC = () => {
   const [stations, setStations] = useStations();
   const [selectedStations, setSelectedStations] = useSelectedStations();
+  const [selectedModule] = useSelectedModule();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,9 +38,10 @@ const StationFilter: React.FC = () => {
   }, [stations.length, setStations]);
 
   const handleStationChange = (stationId: string) => {
+    // Permitir apenas uma estação selecionada por vez
     const newSelection = selectedStations.includes(stationId)
-      ? selectedStations.filter((id: string) => id !== stationId)
-      : [...selectedStations, stationId];
+      ? []
+      : [stationId];
     setSelectedStations(newSelection);
   };
 
@@ -61,26 +67,42 @@ const StationFilter: React.FC = () => {
     );
   }
 
+  // Filtrar estações por módulo selecionado
+  const filteredStations = stations.filter((station: Station) => {
+    // Mapear módulos para categorias de estações
+    const moduleCategoryMap: Record<string, string[]> = {
+      intrusion: ['intrusion', 'salinity', 'water'],
+      solid: ['solid', 'suspension', 'water'],
+      inundation: ['inundation', 'flood', 'water'],
+    };
+
+    const allowedCategories = moduleCategoryMap[selectedModule] || [];
+    return allowedCategories.some(category =>
+      station.category.toLowerCase().includes(category.toLowerCase())
+    );
+  });
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center">
         <Icon name="map-pin" size={20} className="text-primary-600 mr-2" />
-        Estações de Monitoramento
+        Estações de Monitoramento - {selectedModule}
       </h3>
       <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3">
-        {stations.length === 0 && (
+        {filteredStations.length === 0 && (
           <p className="text-sm text-gray-500 text-center">
-            Nenhuma estação disponível.
+            Nenhuma estação disponível para este módulo.
           </p>
         )}
-        {stations.map((station: Station) => (
+        {filteredStations.map((station: Station) => (
           <label
             key={station.code}
             className="flex items-center space-x-3 py-2 cursor-pointer hover:bg-gray-50 rounded-sm px-2"
           >
             <input
-              type="checkbox"
-              className="form-checkbox text-primary-600 rounded"
+              type="radio"
+              name="station"
+              className="form-radio text-primary-600"
               checked={selectedStations.includes(station.code)}
               onChange={() => handleStationChange(station.code)}
             />
@@ -96,7 +118,13 @@ const StationFilter: React.FC = () => {
         ))}
       </div>
       <div className="mt-3 text-sm text-gray-600">
-        {selectedStations.length} estação(ões) selecionada(s)
+        {selectedStations.length > 0 ? (
+          <span className="text-green-600 font-medium">
+            Estação selecionada: {selectedStations[0]}
+          </span>
+        ) : (
+          <span className="text-gray-500">Nenhuma estação selecionada</span>
+        )}
       </div>
     </div>
   );

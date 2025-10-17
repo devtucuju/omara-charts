@@ -14,7 +14,7 @@ import type {
 // Estado inicial da aplicação
 const initialState: AppState = {
   selectedModule: 'intrusion',
-  selectedStations: [],
+  selectedStations: [], // Manter array para compatibilidade, mas usar apenas o primeiro item
   timeRange: {
     start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
     end: new Date(),
@@ -32,7 +32,8 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return {
         ...state,
         selectedModule: action.payload,
-        // Limpar dados quando mudar módulo
+        // Limpar estação selecionada e dados quando mudar módulo
+        selectedStations: [],
         data: [],
         error: null,
       };
