@@ -1,159 +1,84 @@
-import { useState } from 'react';
-import { ChartContainer, MultiStationChart } from './components/charts';
-import { Icon, CacheStats } from './components/ui';
-import {
-  ModuleSelector,
-  StationFilter,
-  TimeRangeFilter,
-} from './components/filters';
+import React from 'react';
+import ChartContainer from './components/charts/ChartContainer';
+import ModuleSelector from './components/filters/ModuleSelector';
+import StationFilter from './components/filters/StationFilter';
+import { Icon } from './components/ui/Icon';
 import { useAppContext } from './contexts';
 
 const App: React.FC = () => {
-  const [count, setCount] = useState(0);
   const { state } = useAppContext();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Icon name="activity" size={48} className="text-primary-600 mr-3" />
-            <h1 className="text-4xl font-bold text-gray-900">
-              OMARA Charts Dashboard
-            </h1>
-          </div>
-          <p className="text-gray-600">
-            Sistema de Visualização de Gráficos por Módulo e Estação
-          </p>
-        </div>
-
-        {/* Componentes de Filtro */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <ModuleSelector />
-          <StationFilter />
-          <TimeRangeFilter />
-        </div>
-
-        {/* Status e Informações */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="card">
-            <h3 className="text-lg font-semibold mb-4 flex items-center">
-              <Icon name="info" size={20} className="text-primary-600 mr-2" />
-              Estado do Contexto
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div>
-                <span className="font-medium">Módulo:</span>{' '}
-                {state.selectedModule}
-              </div>
-              <div>
-                <span className="font-medium">Estações:</span>{' '}
-                {state.selectedStations.length} selecionadas
-              </div>
-              <div>
-                <span className="font-medium">Período:</span>{' '}
-                {state.timeRange.start.toLocaleDateString()} -{' '}
-                {state.timeRange.end.toLocaleDateString()}
-              </div>
-              <div>
-                <span className="font-medium">Dados:</span> {state.data.length}{' '}
-                registros
-              </div>
-              <div>
-                <span className="font-medium">Loading:</span>{' '}
-                {state.loading ? 'Sim' : 'Não'}
-              </div>
-              {state.error && (
-                <div className="text-red-600">
-                  <span className="font-medium">Erro:</span> {state.error}
-                </div>
-              )}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header */}
+        <header className="mb-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-4">
+              <Icon
+                name="activity"
+                size={48}
+                className="text-primary-600 mr-3"
+              />
+              <h1 className="text-4xl font-bold text-gray-900">
+                OMARA Charts Dashboard
+              </h1>
             </div>
-          </div>
-
-          <div className="card">
-            <h3 className="text-lg font-semibold mb-4 flex items-center">
-              <Icon name="success" size={20} className="text-green-600 mr-2" />
-              Status da Configuração
-            </h3>
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <Icon
-                  name="success"
-                  size={16}
-                  className="text-green-500 mr-2"
-                />
-                <span className="text-sm">React + TypeScript</span>
-              </div>
-              <div className="flex items-center">
-                <Icon
-                  name="success"
-                  size={16}
-                  className="text-green-500 mr-2"
-                />
-                <span className="text-sm">TailwindCSS</span>
-              </div>
-              <div className="flex items-center">
-                <Icon
-                  name="success"
-                  size={16}
-                  className="text-green-500 mr-2"
-                />
-                <span className="text-sm">Chart.js</span>
-              </div>
-              <div className="flex items-center">
-                <Icon
-                  name="success"
-                  size={16}
-                  className="text-green-500 mr-2"
-                />
-                <span className="text-sm">Sistema de Cache</span>
-              </div>
-              <div className="flex items-center">
-                <Icon
-                  name="success"
-                  size={16}
-                  className="text-green-500 mr-2"
-                />
-                <span className="text-sm">Navegação Temporal</span>
-              </div>
-            </div>
-          </div>
-
-          <CacheStats />
-        </div>
-
-        {/* Gráficos */}
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          <MultiStationChart className="w-full" />
-          <ChartContainer
-            title="Gráfico de Teste - Chart.js Configurado"
-            className="w-full"
-          />
-        </div>
-
-        {/* Teste de Funcionalidade */}
-        <div className="card">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
-            <Icon name="activity" size={20} className="text-primary-600 mr-2" />
-            Teste de Funcionalidade
-          </h3>
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setCount(count => count + 1)}
-              className="btn-primary"
-            >
-              Count is {count}
-            </button>
             <p className="text-gray-600">
-              Componentes de filtro funcionando! 🎉
+              Sistema de Visualização de Gráficos por Módulo e Estação
             </p>
           </div>
+        </header>
+
+        {/* Filtros */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <ModuleSelector />
+          <StationFilter />
+        </div>
+
+        {/* Status */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <Icon name="info" size={20} className="text-primary-600 mr-2" />
+            Estado da Aplicação
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+              <span className="font-medium">Módulo:</span>{' '}
+              {state.selectedModule}
+            </div>
+            <div>
+              <span className="font-medium">Estações:</span>{' '}
+              {state.selectedStations.length}
+            </div>
+            <div>
+              <span className="font-medium">Dados:</span> {state.data.length}
+            </div>
+            <div>
+              <span className="font-medium">Loading:</span>{' '}
+              {state.loading ? 'Sim' : 'Não'}
+            </div>
+          </div>
+          {state.error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <div className="flex items-center">
+                <Icon name="error" size={16} className="text-red-600 mr-2" />
+                <span className="text-red-800 text-sm">{state.error}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Gráfico */}
+        <div className="grid grid-cols-1 gap-6">
+          <ChartContainer
+            title={`Gráfico - ${state.selectedModule}`}
+            className="w-full"
+          />
         </div>
       </div>
     </div>
   );
 };
 
-// Componente principal com Provider
 export default App;

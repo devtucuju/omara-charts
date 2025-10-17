@@ -194,28 +194,3 @@ export interface ExportOptions {
   filename?: string;
   includeMetadata?: boolean;
 }
-
-export default {
-  // Re-exportar todos os tipos
-  BaseData,
-  IntrusionData,
-  SolidData,
-  InundationData,
-  Station,
-  ModuleType,
-  ModuleData,
-  ChartDataPoint,
-  ChartDataset,
-  ChartConfig,
-  DateRange,
-  StationFilter,
-  TimeFilter,
-  ModuleFilter,
-  AppState,
-  AppAction,
-  AppContextType,
-  UseApiReturn,
-  UseChartDataReturn,
-  ModuleConfig,
-  ExportOptions,
-};

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import {
+import type {
   AppContextType,
   ModuleType,
   ModuleData,

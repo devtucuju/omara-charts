@@ -1,4 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
 import config from '../config/env';
 
 // Interface para configuração da API
@@ -22,7 +23,7 @@ const apiClient: AxiosInstance = axios.create(defaultConfig);
 
 // Interceptor para requisições
 apiClient.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  config => {
     // Adicionar token de autenticação se disponível
     const token = localStorage.getItem('auth_token');
     if (token && config.headers) {
@@ -30,7 +31,7 @@ apiClient.interceptors.request.use(
     }
 
     // Log da requisição (apenas em desenvolvimento)
-    if (config.isDev) {
+    if (config.url) {
       console.log(
         `[API Request] ${config.method?.toUpperCase()} ${config.url}`,
         config

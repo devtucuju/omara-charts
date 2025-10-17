@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
 
 // Hook para gerenciar estado de loading e erros em requisições API
 export const useApi = <T>() => {
@@ -42,6 +42,7 @@ export const useApi = <T>() => {
     error,
     execute,
     reset,
+    setData,
   };
 };
 
@@ -58,7 +59,7 @@ export const useChartData = <T>() => {
 
       if (result && transformFn) {
         const transformedData = transformFn(result);
-        apiHook.setData(transformedData);
+        apiHook.setData(transformedData as T[]);
         return transformedData;
       }
 

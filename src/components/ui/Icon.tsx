@@ -1,6 +1,6 @@
 import React from 'react';
+import type { LucideProps } from 'lucide-react';
 import {
-  LucideProps,
   BarChart3,
   Droplets,
   Waves,

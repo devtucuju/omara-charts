@@ -8,10 +8,15 @@
  * - Estatísticas de performance
  */
 
-import { AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
 import { api } from './api';
 import { dataCache } from './cache';
-import { IntrusionData, SolidData, InundationData, Station } from '../types';
+import type {
+  IntrusionData,
+  SolidData,
+  InundationData,
+  Station,
+} from '../types';
 
 interface CacheOptions {
   ttl?: number; // Time to live em milissegundos

@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useReducer, ReactNode } from 'react';
-import {
+import React, { createContext, useReducer } from 'react';
+import type { ReactNode } from 'react';
+import type {
   AppState,
   AppAction,
   AppContextType,

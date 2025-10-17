@@ -1,4 +1,5 @@
 import React from 'react';
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,7 +10,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -23,27 +23,23 @@ ChartJS.register(
 
 interface ChartContainerProps {
   title?: string;
-  data?: unknown;
-  options?: unknown;
   className?: string;
 }
 
 const ChartContainer: React.FC<ChartContainerProps> = ({
   title,
-  data,
-  options,
   className = '',
 }) => {
-  // Dados de exemplo para teste
   const defaultData = {
     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
     datasets: [
       {
-        label: 'Exemplo de Dados',
-        data: [12, 19, 3, 5, 2, 3],
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        label: 'Dados de Exemplo',
+        data: [65, 59, 80, 81, 56, 55],
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
         tension: 0.4,
+        fill: true,
       },
     ],
   };
@@ -56,8 +52,8 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
         position: 'top' as const,
       },
       title: {
-        display: !!title,
-        text: title,
+        display: true,
+        text: title || 'Gráfico de Dados',
       },
     },
     scales: {
@@ -71,8 +67,9 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
     <div
       className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}
     >
+      <h2 className="text-xl font-semibold mb-4">{title || 'Gráfico'}</h2>
       <div className="h-80">
-        <Line data={data || defaultData} options={options || defaultOptions} />
+        <Line data={defaultData} options={defaultOptions} />
       </div>
     </div>
   );
