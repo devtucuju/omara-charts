@@ -9,17 +9,13 @@ const App: React.FC = () => {
   const { state } = useAppContext();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-2">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <header className="mb-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <Icon
-                name="activity"
-                size={48}
-                className="text-primary-600 mr-3"
-              />
+              <Icon name="activity" size={48} className="text-primary mr-3" />
               <h1 className="text-4xl font-bold text-gray-900">
                 OMARA Charts Dashboard
               </h1>

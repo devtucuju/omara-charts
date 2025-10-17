@@ -85,7 +85,7 @@ const StationFilter: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <Icon name="map-pin" size={20} className="text-primary-600 mr-2" />
+        <Icon name="map-pin" size={20} className="text-primary mr-2" />
         Estações de Monitoramento - {selectedModule}
       </h3>
       <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3">
@@ -102,7 +102,7 @@ const StationFilter: React.FC = () => {
             <input
               type="radio"
               name="station"
-              className="form-radio text-primary-600"
+              className="form-radio text-primary"
               checked={selectedStations.includes(station.code)}
               onChange={() => handleStationChange(station.code)}
             />
@@ -119,11 +119,11 @@ const StationFilter: React.FC = () => {
       </div>
       <div className="mt-3 text-sm text-gray-600">
         {selectedStations.length > 0 ? (
-          <span className="text-green-600 font-medium">
+          <span className="text-success font-medium">
             Estação selecionada: {selectedStations[0]}
           </span>
         ) : (
-          <span className="text-gray-500">Nenhuma estação selecionada</span>
+          <span className="text-body">Nenhuma estação selecionada</span>
         )}
       </div>
     </div>

@@ -60,21 +60,21 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
       case 'intrusion':
         // Nível de Salinidade (0-40)
         data = [25, 30, 28, 35, 32, 29];
-        color = 'rgb(59, 130, 246)'; // Azul
+        color = '#065f46'; // Primary (verde escuro)
         break;
       case 'solid':
         // Sólidos em Suspensão
         data = [45, 52, 48, 55, 50, 47];
-        color = 'rgb(16, 185, 129)'; // Verde
+        color = '#80CAEE'; // Secondary (azul claro)
         break;
       case 'inundation':
         // Nível Medido
         data = [12, 15, 18, 14, 16, 13];
-        color = 'rgb(245, 158, 11)'; // Amarelo
+        color = '#FFA70B'; // Warning (laranja)
         break;
       default:
         data = [65, 59, 80, 81, 56, 55];
-        color = 'rgb(75, 192, 192)';
+        color = '#10B981'; // Meta-3 (verde)
     }
 
     return { labels, data, color, stationId };
@@ -143,11 +143,11 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
         </h2>
         <div className="text-sm text-gray-500">
           {state.selectedStations.length > 0 ? (
-            <span className="text-green-600 font-medium">
+            <span className="text-success font-medium">
               Estação: {state.selectedStations[0]}
             </span>
           ) : (
-            <span className="text-gray-500">Nenhuma estação selecionada</span>
+            <span className="text-body">Nenhuma estação selecionada</span>
           )}
         </div>
       </div>
@@ -183,8 +183,8 @@ const ChartContainer: React.FC<ChartContainerProps> = ({
           <div className="h-80">
             <Line data={chartData} options={chartOptions} />
           </div>
-          <div className="mt-4 p-3 bg-blue-50 rounded-md">
-            <div className="text-sm text-blue-800">
+          <div className="mt-4 p-3 bg-stroke rounded-md">
+            <div className="text-sm text-primary">
               <strong>Dados de Exemplo:</strong> Este gráfico mostra dados
               simulados para a estação {state.selectedStations[0]}. Os dados
               reais serão carregados quando a API estiver conectada.
