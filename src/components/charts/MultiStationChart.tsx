@@ -202,7 +202,7 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
     };
 
     loadChartData();
-  }, [selectedModule, selectedStations, timeRange, setData]);
+  }, [selectedModule, selectedStations, timeRange.start, timeRange.end]);
 
   // Processar dados para o gráfico
   const processChartData = () => {

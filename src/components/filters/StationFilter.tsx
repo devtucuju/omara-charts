@@ -35,7 +35,7 @@ const StationFilter: React.FC<StationFilterProps> = ({ className = '' }) => {
     };
 
     loadStations();
-  }, [stations.length, setStations]);
+  }, [stations.length]);
 
   // Filtrar estações baseado no termo de busca
   const filteredStations = stations.filter(
