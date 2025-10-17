@@ -57,6 +57,7 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
   });
   const [chartRef, setChartRef] = useState<ChartJS | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [showTrendLines, setShowTrendLines] = useState(false);
 
   // Funções para controlar visibilidade da legenda
   const toggleLegendVisibility = (index: number) => {
@@ -93,6 +94,31 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
 
   const onChartRef = (chart: ChartJS | null) => {
     setChartRef(chart);
+  };
+
+  // Função para calcular linha de tendência linear
+  const calculateTrendLine = (values: number[]) => {
+    const n = values.length;
+    if (n < 2) return values;
+
+    // Calcular regressão linear simples
+    let sumX = 0;
+    let sumY = 0;
+    let sumXY = 0;
+    let sumXX = 0;
+
+    for (let i = 0; i < n; i++) {
+      sumX += i;
+      sumY += values[i];
+      sumXY += i * values[i];
+      sumXX += i * i;
+    }
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    // Gerar pontos da linha de tendência
+    return Array.from({ length: n }, (_, i) => slope * i + intercept);
   };
 
   // Cores para diferentes estações
@@ -206,8 +232,8 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
     }
 
     // Criar datasets para cada estação
-    const datasets = Object.entries(stationGroups).map(
-      ([stationId, stationData], index) => {
+    const datasets = Object.entries(stationGroups)
+      .map(([stationId, stationData], index) => {
         const color = stationColors[index % stationColors.length];
         const isVisible = legendVisibility[index] !== false;
 
@@ -230,12 +256,10 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
           }
         });
 
-        // const labels = stationData.map(item => {
-        //   const date = new Date(item.date);
-        //   return `${date.toLocaleDateString('pt-BR')} ${item.hour}`;
-        // }); // Para uso futuro
+        // Calcular linha de tendência se habilitada
+        const trendValues = showTrendLines ? calculateTrendLine(values) : [];
 
-        return {
+        const baseDataset = {
           label: `Estação ${stationId}`,
           data: values,
           borderColor: color,
@@ -247,8 +271,31 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
           stationId,
           hidden: !isVisible,
         };
-      }
-    );
+
+        // Adicionar linha de tendência se habilitada
+        if (showTrendLines && trendValues.length > 0) {
+          return [
+            baseDataset,
+            {
+              label: `Tendência ${stationId}`,
+              data: trendValues,
+              borderColor: color,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderDash: [5, 5],
+              tension: 0,
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              stationId: `${stationId}_trend`,
+              hidden: !isVisible,
+            },
+          ];
+        }
+
+        return baseDataset;
+      })
+      .flat();
 
     // Usar labels da primeira estação (assumindo que todas têm as mesmas datas)
     const firstStation = Object.values(stationGroups)[0];
@@ -574,7 +621,7 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
             </span>
           </div>
 
-          {/* Controles de Zoom */}
+          {/* Controles de Zoom e Tendência */}
           <div className="flex items-center space-x-1">
             <button
               onClick={zoomIn}
@@ -602,6 +649,20 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
             >
               <Icon name="maximize" size={16} />
             </button>
+
+            <div className="w-px h-6 bg-gray-300 mx-1" />
+
+            <button
+              onClick={() => setShowTrendLines(!showTrendLines)}
+              className={`p-1 rounded border transition-colors ${
+                showTrendLines
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-gray-300 hover:bg-gray-100 text-gray-700'
+              }`}
+              title="Alternar Linhas de Tendência"
+            >
+              <Icon name="trending-up" size={16} />
+            </button>
           </div>
         </div>
       </div>
@@ -628,6 +689,16 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
             <span>
               <strong>Tooltips Detalhados:</strong> Passe o mouse sobre os
               pontos para ver informações completas
+            </span>
+          </div>
+        </div>
+
+        <div className="p-2 bg-purple-50 rounded-md">
+          <div className="flex items-center text-xs text-purple-700">
+            <Icon name="trending-up" size={14} className="mr-2" />
+            <span>
+              <strong>Linhas de Tendência:</strong> Clique no botão de tendência
+              para mostrar/ocultar análise de tendência
             </span>
           </div>
         </div>
