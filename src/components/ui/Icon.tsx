@@ -92,7 +92,6 @@ const iconMap = {
   maximize: Maximize,
   box: Box,
   'map-pin': MapPin,
-  success: CheckCircle,
 } as const;
 
 type IconName = keyof typeof iconMap;
