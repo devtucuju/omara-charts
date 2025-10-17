@@ -292,16 +292,135 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
         text: `${MODULES[selectedModule.toUpperCase() as keyof typeof MODULES].name} - Múltiplas Estações`,
       },
       tooltip: {
+        enabled: true,
+        mode: 'index' as const,
+        intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#374151',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: true,
+        titleFont: {
+          size: 14,
+          weight: 'bold' as const,
+        },
+        bodyFont: {
+          size: 12,
+        },
+        padding: 12,
         callbacks: {
           title: (context: unknown) => {
-            return `Data: ${(context as any)[0].label}`;
+            const ctx = context as any;
+            const dataIndex = ctx[0].dataIndex;
+            const dataset = ctx[0].dataset;
+            const stationId = dataset.stationId;
+
+            // Encontrar o item de dados correspondente
+            const stationGroups = data.reduce(
+              (groups, item) => {
+                const id = item.station;
+                if (!groups[id]) groups[id] = [];
+                groups[id].push(item);
+                return groups;
+              },
+              {} as Record<string, typeof data>
+            );
+
+            const stationData = stationGroups[stationId];
+            if (stationData && stationData[dataIndex]) {
+              const item = stationData[dataIndex];
+              const date = new Date(item.date);
+              const formattedDate = date.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              });
+              return `${formattedDate} - ${item.hour}`;
+            }
+
+            return `Data: ${ctx[0].label}`;
           },
           label: (context: unknown) => {
-            const dataset = (context as any).dataset;
-            const value = (context as any).parsed.y;
+            const ctx = context as any;
+            const dataset = ctx.dataset;
+            const value = ctx.parsed.y;
+            const stationId = dataset.stationId;
             const module =
               MODULES[selectedModule.toUpperCase() as keyof typeof MODULES];
-            return `${dataset.label}: ${value} ${module.unit}`;
+
+            // Informações adicionais baseadas no módulo
+            let additionalInfo = '';
+            const dataIndex = ctx.dataIndex;
+
+            // Encontrar dados adicionais da estação
+            const stationGroups = data.reduce(
+              (groups, item) => {
+                const id = item.station;
+                if (!groups[id]) groups[id] = [];
+                groups[id].push(item);
+                return groups;
+              },
+              {} as Record<string, typeof data>
+            );
+
+            const stationData = stationGroups[stationId];
+            if (stationData && stationData[dataIndex]) {
+              const item = stationData[dataIndex];
+
+              switch (selectedModule) {
+                case 'intrusion': {
+                  const intrusionItem = item as IntrusionData;
+                  additionalInfo = `\n• Maré: ${intrusionItem.tideSituation}\n• Fase da Lua: ${intrusionItem.moonPhase}\n• Condição: ${intrusionItem.weatherCondition}`;
+                  break;
+                }
+                case 'solid': {
+                  const solidItem = item as SolidData;
+                  additionalInfo = `\n• Transparência: ${solidItem.transparency}\n• Maré: ${solidItem.tideSituation}\n• Cor da Água: ${solidItem.waterColor}`;
+                  break;
+                }
+                case 'inundation': {
+                  const inundationItem = item as InundationData;
+                  additionalInfo = `\n• Maré: ${inundationItem.tideSituation}\n• Fase da Lua: ${inundationItem.moonPhase}\n• Condição: ${inundationItem.weatherCondition}`;
+                  break;
+                }
+              }
+            }
+
+            // Calcular estatísticas comparativas
+            const currentValues = context.map((c: any) => c.parsed.y);
+            const maxValue = Math.max(...currentValues);
+            const minValue = Math.min(...currentValues);
+            const avgValue =
+              currentValues.reduce((a: number, b: number) => a + b, 0) /
+              currentValues.length;
+
+            // Determinar posição relativa
+            let positionInfo = '';
+            if (context.length > 1) {
+              if (value === maxValue) positionInfo = ' 🔥 (Máximo)';
+              else if (value === minValue) positionInfo = ' ❄️ (Mínimo)';
+              else if (value > avgValue) positionInfo = ' ⬆️ (Acima da média)';
+              else positionInfo = ' ⬇️ (Abaixo da média)';
+            }
+
+            return [
+              `📍 Estação ${stationId}${positionInfo}`,
+              `📊 Valor: ${value} ${module.unit}`,
+              additionalInfo,
+              context.length > 1
+                ? `📈 Média: ${avgValue.toFixed(1)} | Faixa: ${minValue}-${maxValue}`
+                : '',
+            ];
+          },
+          footer: (context: unknown) => {
+            const ctx = context as unknown as any[];
+            if (ctx.length > 1) {
+              return `\n📈 ${ctx.length} estações ativas`;
+            }
+            return '';
           },
         },
       },
@@ -491,14 +610,26 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
         <Line ref={onChartRef} data={chartData} options={chartOptions} />
       </div>
 
-      {/* Instruções de Zoom e Pan */}
-      <div className="mt-3 p-2 bg-blue-50 rounded-md">
-        <div className="flex items-center text-xs text-blue-700">
-          <Icon name="info" size={14} className="mr-2" />
-          <span>
-            <strong>Zoom:</strong> Ctrl + Scroll | <strong>Pan:</strong> Ctrl +
-            Arrastar |<strong> Reset:</strong> Botão Maximizar
-          </span>
+      {/* Instruções de Interação */}
+      <div className="mt-3 space-y-2">
+        <div className="p-2 bg-blue-50 rounded-md">
+          <div className="flex items-center text-xs text-blue-700">
+            <Icon name="info" size={14} className="mr-2" />
+            <span>
+              <strong>Zoom:</strong> Ctrl + Scroll | <strong>Pan:</strong> Ctrl
+              + Arrastar |<strong> Reset:</strong> Botão Maximizar
+            </span>
+          </div>
+        </div>
+
+        <div className="p-2 bg-green-50 rounded-md">
+          <div className="flex items-center text-xs text-green-700">
+            <Icon name="mouse-pointer" size={14} className="mr-2" />
+            <span>
+              <strong>Tooltips Detalhados:</strong> Passe o mouse sobre os
+              pontos para ver informações completas
+            </span>
+          </div>
         </div>
       </div>
 
