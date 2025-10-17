@@ -19,9 +19,9 @@ import {
   useTimeRange,
   useAppData,
 } from '../../hooks/useAppContext';
-import { api } from '../../services/api';
+import { apiWithCache } from '../../services/apiWithCache';
 import { MODULES } from '../../constants';
-import { IntrusionData, SolidData, InundationData } from '../../types';
+import type { IntrusionData, SolidData, InundationData } from '../../types';
 
 ChartJS.register(
   CategoryScale,
@@ -48,6 +48,11 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [legendVisibility, setLegendVisibility] = useState<boolean[]>([]);
+  const [cacheStats, setCacheStats] = useState({
+    hits: 0,
+    misses: 0,
+    hitRate: 0,
+  });
 
   // Funções para controlar visibilidade da legenda
   const toggleLegendVisibility = (index: number) => {
@@ -93,26 +98,41 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
 
         let allData: (IntrusionData | SolidData | InundationData)[] = [];
 
-        // Carregar dados para cada estação selecionada
+        // Carregar dados para cada estação selecionada usando cache
         for (const stationId of selectedStations) {
-          let stationData;
+          let result;
 
           switch (selectedModule) {
             case 'intrusion':
-              stationData = await api.intrusion.getByStation(stationId);
+              result = await apiWithCache.getIntrusionData(stationId);
               break;
             case 'solid':
-              stationData = await api.solid.getByStation(stationId);
+              result = await apiWithCache.getSolidData(stationId);
               break;
             case 'inundation':
-              stationData = await api.inundation.getByStation(stationId);
+              result = await apiWithCache.getInundationData(stationId);
               break;
             default:
               continue;
           }
 
-          if (stationData.data) {
-            allData = [...allData, ...stationData.data];
+          if (result.data) {
+            allData = [...allData, ...result.data];
+
+            // Atualizar estatísticas de cache
+            if (result.fromCache) {
+              setCacheStats(prev => ({
+                ...prev,
+                hits: prev.hits + 1,
+                hitRate: (prev.hits + 1) / (prev.hits + prev.misses + 1),
+              }));
+            } else {
+              setCacheStats(prev => ({
+                ...prev,
+                misses: prev.misses + 1,
+                hitRate: prev.hits / (prev.hits + prev.misses + 1),
+              }));
+            }
           }
         }
 
@@ -358,11 +378,25 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
             {selectedStations.length} estação(ões) selecionada(s)
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Icon name="trending-up" size={20} className="text-primary-600" />
-          <span className="text-sm text-gray-600">
-            {chartData.datasets.length} linha(s)
-          </span>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Icon name="trending-up" size={20} className="text-primary-600" />
+            <span className="text-sm text-gray-600">
+              {chartData.datasets.length} linha(s)
+            </span>
+          </div>
+
+          {/* Indicador de Cache */}
+          <div className="flex items-center space-x-2">
+            <Icon
+              name="database"
+              size={16}
+              className={`${cacheStats.hitRate > 0.5 ? 'text-green-500' : 'text-gray-400'}`}
+            />
+            <span className="text-xs text-gray-500">
+              Cache: {Math.round(cacheStats.hitRate * 100)}%
+            </span>
+          </div>
         </div>
       </div>
 

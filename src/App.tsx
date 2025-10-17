@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChartContainer, MultiStationChart } from './components/charts';
-import { Icon } from './components/ui';
+import { Icon, CacheStats } from './components/ui';
 import {
   ModuleSelector,
   StationFilter,
@@ -36,7 +36,7 @@ const AppContent: React.FC = () => {
         </div>
 
         {/* Status e Informações */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="card">
             <h3 className="text-lg font-semibold mb-4 flex items-center">
               <Icon name="info" size={20} className="text-primary-600 mr-2" />
@@ -108,7 +108,7 @@ const AppContent: React.FC = () => {
                   size={16}
                   className="text-green-500 mr-2"
                 />
-                <span className="text-sm">Componentes de Filtro</span>
+                <span className="text-sm">Sistema de Cache</span>
               </div>
               <div className="flex items-center">
                 <Icon
@@ -116,10 +116,12 @@ const AppContent: React.FC = () => {
                   size={16}
                   className="text-green-500 mr-2"
                 />
-                <span className="text-sm">Seleção Múltipla</span>
+                <span className="text-sm">Navegação Temporal</span>
               </div>
             </div>
           </div>
+
+          <CacheStats />
         </div>
 
         {/* Gráficos */}
