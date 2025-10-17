@@ -11,6 +11,7 @@ import {
   Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { Icon } from '../ui';
 import InteractiveLegend from './InteractiveLegend';
 import {
@@ -31,7 +32,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  zoomPlugin
 );
 
 interface MultiStationChartProps {
@@ -53,6 +55,8 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
     misses: 0,
     hitRate: 0,
   });
+  const [chartRef, setChartRef] = useState<ChartJS | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   // Funções para controlar visibilidade da legenda
   const toggleLegendVisibility = (index: number) => {
@@ -63,6 +67,32 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
 
   const toggleAllLegend = (visible: boolean) => {
     setLegendVisibility(legendVisibility.map(() => visible));
+  };
+
+  // Funções para controlar zoom e pan
+  const resetZoom = () => {
+    if (chartRef) {
+      chartRef.resetZoom();
+      setIsZoomed(false);
+    }
+  };
+
+  const zoomIn = () => {
+    if (chartRef) {
+      chartRef.zoom(1.2);
+      setIsZoomed(true);
+    }
+  };
+
+  const zoomOut = () => {
+    if (chartRef) {
+      chartRef.zoom(0.8);
+      setIsZoomed(true);
+    }
+  };
+
+  const onChartRef = (chart: ChartJS | null) => {
+    setChartRef(chart);
   };
 
   // Cores para diferentes estações
@@ -275,6 +305,27 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
           },
         },
       },
+      zoom: {
+        limits: {
+          x: { min: 0, max: 100 },
+          y: { min: 0, max: 100 },
+        },
+        pan: {
+          enabled: true,
+          mode: 'x' as const,
+          modifierKey: 'ctrl',
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+            modifierKey: 'ctrl',
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: 'x' as const,
+        },
+      },
     },
     scales: {
       x: {
@@ -295,6 +346,12 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
         max: MODULES[selectedModule.toUpperCase() as keyof typeof MODULES]
           .maxValue,
       },
+    },
+    onZoom: () => {
+      setIsZoomed(true);
+    },
+    onPan: () => {
+      setIsZoomed(true);
     },
   };
 
@@ -397,11 +454,52 @@ const MultiStationChart: React.FC<MultiStationChartProps> = ({
               Cache: {Math.round(cacheStats.hitRate * 100)}%
             </span>
           </div>
+
+          {/* Controles de Zoom */}
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={zoomIn}
+              className="p-1 rounded border border-gray-300 hover:bg-gray-100 transition-colors"
+              title="Zoom In (Ctrl + Scroll)"
+            >
+              <Icon name="zoom-in" size={16} />
+            </button>
+            <button
+              onClick={zoomOut}
+              className="p-1 rounded border border-gray-300 hover:bg-gray-100 transition-colors"
+              title="Zoom Out (Ctrl + Scroll)"
+            >
+              <Icon name="zoom-out" size={16} />
+            </button>
+            <button
+              onClick={resetZoom}
+              disabled={!isZoomed}
+              className={`p-1 rounded border border-gray-300 transition-colors ${
+                isZoomed
+                  ? 'hover:bg-gray-100 text-gray-700'
+                  : 'text-gray-400 cursor-not-allowed'
+              }`}
+              title="Reset Zoom"
+            >
+              <Icon name="maximize" size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="h-80">
-        <Line data={chartData} options={chartOptions} />
+        <Line ref={onChartRef} data={chartData} options={chartOptions} />
+      </div>
+
+      {/* Instruções de Zoom e Pan */}
+      <div className="mt-3 p-2 bg-blue-50 rounded-md">
+        <div className="flex items-center text-xs text-blue-700">
+          <Icon name="info" size={14} className="mr-2" />
+          <span>
+            <strong>Zoom:</strong> Ctrl + Scroll | <strong>Pan:</strong> Ctrl +
+            Arrastar |<strong> Reset:</strong> Botão Maximizar
+          </span>
+        </div>
       </div>
 
       {/* Legenda Interativa */}
