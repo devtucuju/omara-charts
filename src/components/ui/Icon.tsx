@@ -39,7 +39,7 @@ import {
   Maximize,
   Box,
   MapPin,
-  Success,
+  CheckCircle,
 } from 'lucide-react';
 
 // Mapeamento de ícones para facilitar uso
@@ -93,7 +93,7 @@ const iconMap = {
   maximize: Maximize,
   box: Box,
   'map-pin': MapPin,
-  success: Success,
+  success: CheckCircle,
 } as const;
 
 type IconName = keyof typeof iconMap;
