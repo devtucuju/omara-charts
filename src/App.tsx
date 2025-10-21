@@ -16,13 +16,9 @@ const App: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <Icon name="activity" size={48} className="text-primary mr-3" />
-              <h1 className="text-4xl font-bold text-gray-900">
-                OMARA Charts Dashboard
-              </h1>
+              <h1 className="text-4xl font-bold text-gray-900">OMARA</h1>
             </div>
-            <p className="text-gray-600">
-              Sistema de Visualização de Gráficos por Módulo e Estação
-            </p>
+            <p className="text-gray-600">Gráficos por Módulo e Estação</p>
           </div>
         </header>
 
