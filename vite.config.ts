@@ -1,16 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
-function getBaseUrl(): string {
-  if (process.env.VITE_BASE_URL) {
-    return process.env.VITE_BASE_URL;
-  }
-  return process.env.NODE_ENV === 'production' ? '/charts/' : '/';
-}
-
 export default defineConfig({
-  base: getBaseUrl(),
+  base: '/charts/',
   plugins: [react()],
   server: {
     host: '0.0.0.0',
