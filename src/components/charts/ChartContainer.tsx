@@ -194,7 +194,7 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ className = '' }) => {
     state.selectedStations.length > 0 ? state.selectedStations[0] : null;
 
   // Determinar a unidade e label corretos
-  let unit = moduleConfig?.unit || 'Valor';
+  let unit: string = 'Valor';
   let chartLabel = stationId
     ? `${moduleConfig?.name} - ${stationId}`
     : 'Selecione uma estação';
@@ -211,6 +211,10 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ className = '' }) => {
         ? `Sólidos Presentes - ${stationId}`
         : 'Selecione uma estação';
     }
+  } else {
+    // Para outros módulos, garantir que unit seja string
+    const moduleUnit = moduleConfig?.unit;
+    unit = typeof moduleUnit === 'string' ? moduleUnit : 'Valor';
   }
 
   const chartData = {
