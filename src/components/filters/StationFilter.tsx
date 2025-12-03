@@ -3,17 +3,23 @@ import {
   useSelectedStations,
   useStations,
   useSelectedModule,
+  useAppContext,
 } from '../../hooks/useAppContext';
 import { api } from '../../services/api';
 import { Icon } from '../ui/Icon';
 import type { Station } from '../../types';
 
 const StationFilter: React.FC = () => {
+  const { state } = useAppContext();
   const [stations, setStations] = useStations();
   const [selectedStations, setSelectedStations] = useSelectedStations();
   const [selectedModule] = useSelectedModule();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Se for módulo solid, só mostrar estações se o tipo de dado foi selecionado
+  const shouldShowStations =
+    selectedModule !== 'solid' || state.solidDataType !== undefined;
 
   // Carregar estações na inicialização
   useEffect(() => {
@@ -67,6 +73,21 @@ const StationFilter: React.FC = () => {
     );
   }
 
+  // Se for módulo solid e ainda não selecionou o tipo de dado, não mostrar
+  if (!shouldShowStations) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center justify-center h-40">
+        <div className="text-center">
+          <Icon name="info" className="mx-auto mb-2 text-gray-400" size={24} />
+          <p className="text-sm text-gray-500">
+            Selecione primeiro o tipo de dado (Transparência ou Sólidos
+            Presentes)
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Filtrar estações por módulo selecionado
   const filteredStations = stations.filter((station: Station) => {
     // Mapear módulos para categorias de estações
@@ -86,7 +107,7 @@ const StationFilter: React.FC = () => {
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h3 className="text-lg font-semibold mb-4 flex items-center">
         <Icon name="map-pin" size={20} className="text-primary mr-2" />
-        Estações de Monitoramento - {selectedModule}
+        Estações de Monitoramento
       </h3>
       <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3">
         {filteredStations.length === 0 && (
@@ -111,7 +132,7 @@ const StationFilter: React.FC = () => {
                 {station.location}
               </div>
               <div className="text-xs text-gray-500">
-                Código: {station.code} | Categoria: {station.category}
+                Código: {station.code}
               </div>
             </div>
           </label>

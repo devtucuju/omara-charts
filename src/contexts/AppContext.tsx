@@ -6,6 +6,7 @@ import type {
   AppAction,
   AppContextType,
   ModuleType,
+  SolidDataType,
   DateRange,
   ModuleData,
   Station,
@@ -32,7 +33,18 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       return {
         ...state,
         selectedModule: action.payload,
-        // Limpar estação selecionada e dados quando mudar módulo
+        // Limpar estação selecionada, tipo de dado e dados quando mudar módulo
+        selectedStations: [],
+        solidDataType: undefined,
+        data: [],
+        error: null,
+      };
+
+    case 'SET_SOLID_DATA_TYPE':
+      return {
+        ...state,
+        solidDataType: action.payload,
+        // Limpar estação selecionada e dados quando mudar tipo de dado
         selectedStations: [],
         data: [],
         error: null,
@@ -110,6 +122,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
     setStations: (stations: string[]) => {
       dispatch({ type: 'SET_STATIONS', payload: stations });
+    },
+
+    setSolidDataType: (type: SolidDataType) => {
+      dispatch({ type: 'SET_SOLID_DATA_TYPE', payload: type });
     },
 
     setTimeRange: (range: DateRange) => {

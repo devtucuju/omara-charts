@@ -76,6 +76,9 @@ export interface Station {
 export type ModuleType = 'intrusion' | 'solid' | 'inundation';
 export type ModuleData = IntrusionData | SolidData | InundationData;
 
+// Tipo para campo de sólidos em suspensão
+export type SolidDataType = 'transparency' | 'solidsPresent';
+
 // Tipos para gráficos
 export interface ChartDataPoint {
   x: string | Date;
@@ -128,6 +131,7 @@ export interface ModuleFilter {
 export interface AppState {
   selectedModule: ModuleType;
   selectedStations: string[];
+  solidDataType?: SolidDataType; // Campo selecionado para módulo solid
   timeRange: DateRange;
   loading: boolean;
   error: string | null;
@@ -139,6 +143,7 @@ export interface AppState {
 export type AppAction =
   | { type: 'SET_MODULE'; payload: ModuleType }
   | { type: 'SET_STATIONS'; payload: string[] }
+  | { type: 'SET_SOLID_DATA_TYPE'; payload: SolidDataType }
   | { type: 'SET_TIME_RANGE'; payload: DateRange }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
@@ -153,6 +158,7 @@ export interface AppContextType {
   actions: {
     setModule: (module: ModuleType) => void;
     setStations: (stations: string[]) => void;
+    setSolidDataType: (type: SolidDataType) => void;
     setTimeRange: (range: DateRange) => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
