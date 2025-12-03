@@ -16,11 +16,12 @@ const App: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <img
-                src="/logo/logo.png"
+                src="/logo.png"
                 alt="OMARA Logo"
                 width={48}
                 height={48}
                 className="mr-3"
+                loading="eager"
               />{' '}
               <h1 className="text-4xl font-bold text-gray-900">
                 Observatório Popular do Mar
