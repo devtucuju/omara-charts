@@ -27,6 +27,58 @@ export const formatDateTime = (date: Date | string): string => {
 };
 
 /**
+ * Formata uma data e hora no formato: 15-JAN-2024 00:00
+ */
+export const formatDateTimeChart = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // Mapeamento de meses para abreviações em maiúsculas
+  const months = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
+  ];
+
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = months[dateObj.getMonth()];
+  const year = dateObj.getFullYear();
+  const hours = String(dateObj.getHours()).padStart(2, '0');
+  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+
+  return `${day}-${month}-${year} ${hours}:${minutes}`;
+};
+
+/**
+ * Combina date e hour (formato do MongoDB) e formata no formato: 15-JAN-2024 00:00
+ * @param date - Data no formato ISO string ou Date
+ * @param hour - Hora no formato "HH:MM" ou "HH:MM:SS"
+ */
+export const formatDateTimeChartFromParts = (
+  date: Date | string,
+  hour: string
+): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // Extrair horas e minutos da string hour (formato "HH:MM" ou "HH:MM:SS")
+  const [hours, minutes] = hour.split(':').map(Number);
+
+  // Criar nova data com a hora especificada
+  const dateTime = new Date(dateObj);
+  dateTime.setHours(hours || 0, minutes || 0, 0, 0);
+
+  return formatDateTimeChart(dateTime);
+};
+
+/**
  * Formata um número com separadores de milhares
  */
 export const formatNumber = (value: number, decimals = 2): string => {
@@ -152,6 +204,8 @@ export class LocalCache {
 export default {
   formatDate,
   formatDateTime,
+  formatDateTimeChart,
+  formatDateTimeChartFromParts,
   formatNumber,
   debounce,
   throttle,
