@@ -3,7 +3,7 @@ import type { ModuleType } from '../types';
 interface ModuleConfig {
   id: ModuleType;
   name: string;
-  unit: string;
+  unit: string | { transparency: string; solidsPresent: string };
   maxValue?: number;
 }
 
@@ -11,18 +11,21 @@ export const MODULES: Record<string, ModuleConfig> = {
   INTRUSION: {
     id: 'intrusion',
     name: 'Intrusão Salina',
-    unit: 'Nível de Salinidade',
+    unit: 'Nível de Salinidade ‰',
     maxValue: 40,
   },
   SOLID: {
     id: 'solid',
     name: 'Sólidos em Suspensão',
-    unit: 'Sólidos Presentes',
+    unit: {
+      transparency: 'Transparência cm',
+      solidsPresent: 'Sólidos Presentes ml',
+    },
   },
   INUNDATION: {
     id: 'inundation',
     name: 'Inundação',
-    unit: 'Nível Medido',
+    unit: 'Nível Medido m',
   },
 };
 

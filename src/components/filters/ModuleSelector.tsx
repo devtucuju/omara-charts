@@ -35,15 +35,33 @@ const ModuleSelector: React.FC = () => {
       {currentModule && (
         <div className="mt-4 p-3 bg-stroke border border-primary rounded-md">
           <div className="text-sm">
-            <div className="font-medium text-primary mb-1">
+            <div className="font-medium text-primary mb-2">
               {currentModule.name}
             </div>
-            <div className="text-body">
-              <strong>Unidade:</strong> {currentModule.unit}
-            </div>
-            {currentModule.maxValue && (
+            {selectedModule === 'solid' ? (
               <div className="text-body">
-                <strong>Valor Máximo:</strong> {currentModule.maxValue}
+                <div className="mb-2">
+                  <strong>Unidade:</strong>
+                </div>
+                <div className="ml-2 space-y-1">
+                  <div>
+                    {typeof currentModule.unit === 'object'
+                      ? currentModule.unit.transparency
+                      : 'Transparência cm'}
+                  </div>
+                  <div>
+                    {typeof currentModule.unit === 'object'
+                      ? currentModule.unit.solidsPresent
+                      : 'Sólidos Presentes ml'}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-body">
+                <strong>Unidade:</strong>{' '}
+                {typeof currentModule.unit === 'string'
+                  ? currentModule.unit
+                  : 'N/A'}
               </div>
             )}
           </div>
