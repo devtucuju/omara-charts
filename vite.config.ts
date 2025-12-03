@@ -1,12 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Base URL: /charts/ em produção, / em desenvolvimento
-// Pode ser sobrescrito pela variável de ambiente VITE_BASE_URL
-const baseUrl = process.env.VITE_BASE_URL || '/charts/';
-
+// https://vite.dev/config/
 export default defineConfig({
-  base: baseUrl,
   plugins: [react()],
   server: {
     host: '0.0.0.0',
