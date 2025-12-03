@@ -16,7 +16,7 @@ const App: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <img
-                src="/logo.png"
+                src={`${import.meta.env.BASE_URL}logo.png`}
                 alt="OMARA Logo"
                 width={48}
                 height={48}
