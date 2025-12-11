@@ -4,6 +4,7 @@ import ModuleSelector from './components/filters/ModuleSelector';
 import StationFilter from './components/filters/StationFilter';
 import SolidDataTypeSelector from './components/filters/SolidDataTypeSelector';
 import { useAppContext } from './contexts';
+import logo from './assets/logo.png';
 
 const App: React.FC = () => {
   const { state } = useAppContext();
@@ -16,7 +17,7 @@ const App: React.FC = () => {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <img
-                src="/logo.png"
+                src={logo}
                 alt="OMARA Logo"
                 width={48}
                 height={48}
