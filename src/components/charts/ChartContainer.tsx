@@ -156,7 +156,7 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ className = '' }) => {
               stationId,
               undefined,
               undefined,
-              {}
+              { forceRefresh: true } // Forçar atualização para garantir dados corretos da estação
             );
             apiData = inundationResult.data;
             break;

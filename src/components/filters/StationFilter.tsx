@@ -6,6 +6,7 @@ import {
   useAppContext,
 } from '../../hooks/useAppContext';
 import { api } from '../../services/api';
+import apiWithCache from '../../services/apiWithCache';
 import { Icon } from '../ui/Icon';
 import type { Station } from '../../types';
 
@@ -15,7 +16,11 @@ const StationFilter: React.FC = () => {
   const [selectedStations, setSelectedStations] = useSelectedStations();
   const [selectedModule] = useSelectedModule();
   const [loading, setLoading] = useState(false);
+  const [loadingStationsWithData, setLoadingStationsWithData] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stationsWithData, setStationsWithData] = useState<Set<string>>(
+    new Set()
+  );
 
   // Se for módulo solid, só mostrar estações se o tipo de dado foi selecionado
   const shouldShowStations =
@@ -43,6 +48,47 @@ const StationFilter: React.FC = () => {
     loadStations();
   }, [stations.length, setStations]);
 
+  // Para módulo de inundação, buscar dados e identificar estações que têm dados
+  useEffect(() => {
+    const loadStationsWithData = async () => {
+      if (selectedModule !== 'inundation' || stations.length === 0) {
+        setStationsWithData(new Set());
+        return;
+      }
+
+      setLoadingStationsWithData(true);
+      setError(null);
+
+      try {
+        // Buscar todos os dados de inundação (sem filtro de estação)
+        const result = await apiWithCache.getInundationData(
+          undefined,
+          undefined,
+          undefined,
+          { forceRefresh: true }
+        );
+
+        // Extrair códigos únicos de estações que têm dados
+        const stationCodes = new Set<string>();
+        result.data.forEach((item: { station: string }) => {
+          if (item.station) {
+            stationCodes.add(item.station);
+          }
+        });
+
+        setStationsWithData(stationCodes);
+      } catch (err: unknown) {
+        console.error('Erro ao buscar estações com dados de inundação:', err);
+        // Em caso de erro, não filtrar (mostrar todas)
+        setStationsWithData(new Set());
+      } finally {
+        setLoadingStationsWithData(false);
+      }
+    };
+
+    loadStationsWithData();
+  }, [selectedModule, stations.length]);
+
   const handleStationChange = (stationId: string) => {
     // Permitir apenas uma estação selecionada por vez
     const newSelection = selectedStations.includes(stationId)
@@ -51,7 +97,7 @@ const StationFilter: React.FC = () => {
     setSelectedStations(newSelection);
   };
 
-  if (loading) {
+  if (loading || loadingStationsWithData) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex items-center justify-center h-40">
         <Icon
@@ -59,7 +105,11 @@ const StationFilter: React.FC = () => {
           className="animate-spin text-primary-500"
           size={24}
         />
-        <span className="ml-2 text-gray-600">Carregando estações...</span>
+        <span className="ml-2 text-gray-600">
+          {loadingStationsWithData
+            ? 'Carregando estações com dados...'
+            : 'Carregando estações...'}
+        </span>
       </div>
     );
   }
@@ -89,7 +139,7 @@ const StationFilter: React.FC = () => {
   }
 
   // Filtrar estações por módulo selecionado
-  const filteredStations = stations.filter((station: Station) => {
+  let filteredStations = stations.filter((station: Station) => {
     // Mapear módulos para categorias de estações
     const moduleCategoryMap: Record<string, string[]> = {
       intrusion: ['intrusion', 'salinity', 'water'],
@@ -102,6 +152,13 @@ const StationFilter: React.FC = () => {
       station.category.toLowerCase().includes(category.toLowerCase())
     );
   });
+
+  // Para módulo de inundação, filtrar apenas estações que têm dados
+  if (selectedModule === 'inundation' && stationsWithData.size > 0) {
+    filteredStations = filteredStations.filter((station: Station) =>
+      stationsWithData.has(station.code)
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
